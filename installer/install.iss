@@ -1,5 +1,5 @@
 ; RustDesk Zero-Touch — Inno Setup 6
-#define MyAppName    "RustDesk Zero-Touch"
+#define MyAppName "Remote Support"
 #define MyAppVersion "1.0.0"
 
 #ifndef flavor
@@ -38,7 +38,7 @@ AppId={{9C4B2A11-7E3D-4F6A-9B21-5D8E0C7A3F44}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher=RustDesk Zero-Touch
-DefaultDirName={autopf}\RustDeskZeroTouch
+DefaultDirName={autopf}\RemoteSupport
 DisableDirPage=yes
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
@@ -46,7 +46,7 @@ PrivilegesRequired=admin
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=out
-OutputBaseFilename=RustDesk-ZeroTouch-{#flavor}
+OutputBaseFilename=RemoteSupport-Setup
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
