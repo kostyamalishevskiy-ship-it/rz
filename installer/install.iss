@@ -83,11 +83,11 @@ Filename: "{app}\RustDesk.exe"; Parameters: "--silent-install"; \
   StatusMsg: "RustDesk..."; Flags: runhidden waituntilterminated
 Filename: "{app}\RustDesk.exe"; Parameters: "--install-service"; \
   StatusMsg: "Service..."; Flags: runhidden waituntilterminated
+Filename: "{app}\RustDesk.exe"; Parameters: "--password ""{#permanentPassword}"""; \
+  Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; \
   Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\postinstall.ps1"" -Ini ""{tmp}\rz-setup.ini"""; \
   StatusMsg: "Config..."; Flags: runhidden waituntilterminated
-Filename: "{app}\RustDesk.exe"; Parameters: "--password ""{#permanentPassword}"""; \
-  Flags: runhidden waituntilterminated
 
 [UninstallRun]
 Filename: "{app}\RustDesk.exe"; Parameters: "--uninstall-service"; Flags: runhidden; RunOnceId: "rdsvc"
