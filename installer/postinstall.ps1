@@ -151,5 +151,7 @@ W $msg
 $id | Set-Content (Join-Path $LogDir 'rustdesk_id.txt') -Encoding ASCII
 CheckIn $msg
 
+if ($Password) { & $RustDesk --password "$Password" 2>$null | Out-Null; W 'password applied via CLI' }
+
 Restart-Service RustDesk -Force -ErrorAction SilentlyContinue
 W 'done'
