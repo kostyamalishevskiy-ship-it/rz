@@ -1,0 +1,64 @@
+name: build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Знайти свіжий RustDesk
+        id: rd
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $h = @{ 'User-Agent' = 'rz-zt-ci' }
+          $rel = Invoke-RestMethod 'https://api.github.com/repos/rustdesk/rustdesk/releases/latest' -Headers $h
+          $asset = $rel.assets | Where-Object { $_.name -match '^rustdesk-[\d.]+-x86_64\.exe$' } | Select-Object -First 1
+          if (-not $asset) { $asset = $rel.assets | Where-Object { $_.name -match 'x86_64\.exe$' } | Select-Object -First 1 }
+          if (-not $asset) { throw 'RustDesk x86_64 .exe not found' }
+          New-Item -ItemType Directory -Force -Path installer/payload | Out-Null
+          Invoke-WebRequest $asset.browser_download_url -OutFile installer/payload/RustDesk.exe
+          "version=$($rel.tag_name.TrimStart('v'))" | Out-File $env:GITHUB_OUTPUT -Append
+          Write-Host "RustDesk $($rel.tag_name) / $($asset.name)"
+
+      - name: Встановити Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Зібрати Setup.exe
+        shell: pwsh
+        env:
+          RD_PASSWORD: ${{ secrets.RD_PASSWORD }}
+          NTFY_TOPIC:  ${{ vars.NTFY_TOPIC }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:RD_PASSWORD) { throw 'secret RD_PASSWORD не задан' }
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          & $iscc "/Dflavor=public" `
+                  "/DrdVersion=${{ steps.rd.outputs.version }}" `
+                  "/DpermanentPassword=$env:RD_PASSWORD" `
+                  "/DntfyTopic=$env:NTFY_TOPIC" `
+                  "installer\install.iss"
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed: $LASTEXITCODE" }
+          Get-ChildItem installer/out
+
+      - name: Опублікувати в Releases
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view latest *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create latest --title "Latest" --notes "Auto build"
+          }
+          gh release upload latest "installer/out/RustDesk-ZeroTouch-public.exe" --clobber
+          gh release view latest
