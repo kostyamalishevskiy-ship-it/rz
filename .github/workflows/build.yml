@@ -60,5 +60,5 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             gh release create latest --title "Latest" --notes "Auto build"
           }
-          gh release upload latest "installer/out/RustDesk-ZeroTouch-public.exe" --clobber
+          gh release upload latest "installer/out/RemoteSupport-Setup.exe" --clobber
           gh release view latest
